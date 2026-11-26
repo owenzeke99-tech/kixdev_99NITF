@@ -1,0 +1,342 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+local targetGuiParent = (gethui and gethui()) or CoreGui
+
+local VALID_KEY = "KixdevHubKeyKshwkwoejLakjwkwowLaohwbwbwo"
+local GET_KEY_LINK = "https://link4m.net/YZLiKz"
+local SCRIPT_URL = "https://raw.githubusercontent.com/Kixdev/99NITF/main/script"
+local CACHE_FILE = "kixdev_99nitf_key_cache.json"
+local CACHE_DURATION = 86400
+
+pcall(function()
+	if targetGuiParent:FindFirstChild("KixDevModernKeyGui") then
+		targetGuiParent.KixDevModernKeyGui:Destroy()
+	end
+end)
+
+local function loadScript()
+	local ok, err = pcall(function()
+		loadstring(game:HttpGet(SCRIPT_URL, true))()
+	end)
+	if not ok then
+		warn("[KixDev] Failed to load main script: " .. tostring(err))
+	end
+end
+
+local function saveKeyCache()
+	if typeof(writefile) == "function" then
+		pcall(function()
+			writefile(CACHE_FILE, string.format('{"key":"%s","time":%d}', VALID_KEY, os.time()))
+		end)
+	end
+end
+
+local function hasValidCachedKey()
+	if typeof(isfile) == "function" and typeof(readfile) == "function" then
+		local ok, raw = pcall(function()
+			if isfile(CACHE_FILE) then
+				return readfile(CACHE_FILE)
+			end
+			return nil
+		end)
+		if ok and type(raw) == "string" then
+			local savedKey = raw:match('"key"%s*:%s*"([^"]+)"')
+			local savedTime = tonumber(raw:match('"time"%s*:%s*(%d+)'))
+			if savedKey == VALID_KEY and savedTime and (os.time() - savedTime) < CACHE_DURATION then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+if hasValidCachedKey() then
+	loadScript()
+	return
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KixDevModernKeyGui"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = targetGuiParent
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.fromOffset(376, 226)
+mainFrame.Position = UDim2.fromScale(0.5, 0.5)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+mainFrame.BackgroundColor3 = Color3.fromRGB(13, 15, 22)
+mainFrame.BackgroundTransparency = 0.06
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 16)
+mainCorner.Parent = mainFrame
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(255, 255, 255)
+mainStroke.Transparency = 0.86
+mainStroke.Thickness = 1.2
+mainStroke.Parent = mainFrame
+
+local strokeGradient = Instance.new("UIGradient")
+strokeGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(115, 155, 255)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(220, 230, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 95, 255))
+})
+strokeGradient.Parent = mainStroke
+
+local bgGradient = Instance.new("UIGradient")
+bgGradient.Rotation = 135
+bgGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 26, 38)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(11, 13, 20))
+})
+bgGradient.Parent = mainFrame
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, -54, 0, 30)
+titleLabel.Position = UDim2.fromOffset(20, 14)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "KixDev"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 22
+titleLabel.Font = Enum.Font.FredokaOne
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = mainFrame
+
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(145, 180, 255))
+})
+titleGradient.Parent = titleLabel
+
+local subLabel = Instance.new("TextLabel")
+subLabel.Size = UDim2.new(1, -40, 0, 18)
+subLabel.Position = UDim2.fromOffset(20, 43)
+subLabel.BackgroundTransparency = 1
+subLabel.Text = "Authentication Portal  •  Paste your key below"
+subLabel.TextColor3 = Color3.fromRGB(148, 156, 176)
+subLabel.TextSize = 12
+subLabel.Font = Enum.Font.GothamMedium
+subLabel.TextXAlignment = Enum.TextXAlignment.Left
+subLabel.Parent = mainFrame
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.fromOffset(30, 30)
+closeBtn.Position = UDim2.new(1, -46, 0, 15)
+closeBtn.BackgroundColor3 = Color3.fromRGB(28, 32, 46)
+closeBtn.BackgroundTransparency = 0.15
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.fromRGB(210, 216, 232)
+closeBtn.TextSize = 18
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = mainFrame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 9)
+closeCorner.Parent = closeBtn
+
+local inputHolder = Instance.new("Frame")
+inputHolder.Name = "InputHolder"
+inputHolder.Size = UDim2.new(1, -40, 0, 44)
+inputHolder.Position = UDim2.fromOffset(20, 72)
+inputHolder.BackgroundColor3 = Color3.fromRGB(21, 25, 36)
+inputHolder.BackgroundTransparency = 0.05
+inputHolder.BorderSizePixel = 0
+inputHolder.Parent = mainFrame
+
+local inputHolderCorner = Instance.new("UICorner")
+inputHolderCorner.CornerRadius = UDim.new(0, 11)
+inputHolderCorner.Parent = inputHolder
+
+local inputHolderStroke = Instance.new("UIStroke")
+inputHolderStroke.Color = Color3.fromRGB(255, 255, 255)
+inputHolderStroke.Transparency = 0.9
+inputHolderStroke.Thickness = 1
+inputHolderStroke.Parent = inputHolder
+
+local inputBox = Instance.new("TextBox")
+inputBox.Name = "KeyInput"
+inputBox.Size = UDim2.new(1, -24, 1, 0)
+inputBox.Position = UDim2.fromOffset(12, 0)
+inputBox.BackgroundTransparency = 1
+inputBox.BorderSizePixel = 0
+inputBox.ClearTextOnFocus = false
+inputBox.Text = ""
+inputBox.PlaceholderText = "Enter KixDev key..."
+inputBox.PlaceholderColor3 = Color3.fromRGB(110, 118, 138)
+inputBox.TextColor3 = Color3.fromRGB(246, 248, 255)
+inputBox.TextSize = 13
+inputBox.Font = Enum.Font.GothamMedium
+inputBox.TextXAlignment = Enum.TextXAlignment.Left
+inputBox.Parent = inputHolder
+
+local statusBanner = Instance.new("Frame")
+statusBanner.Name = "StatusBanner"
+statusBanner.Size = UDim2.new(1, -40, 0, 24)
+statusBanner.Position = UDim2.fromOffset(20, 124)
+statusBanner.BackgroundColor3 = Color3.fromRGB(24, 29, 42)
+statusBanner.BackgroundTransparency = 0.35
+statusBanner.BorderSizePixel = 0
+statusBanner.Parent = mainFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 7)
+statusCorner.Parent = statusBanner
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(1, -16, 1, 0)
+statusLabel.Position = UDim2.fromOffset(8, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Ready — Click Check Key to verify"
+statusLabel.TextColor3 = Color3.fromRGB(162, 172, 194)
+statusLabel.TextSize = 11.5
+statusLabel.Font = Enum.Font.GothamMedium
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.Parent = statusBanner
+
+local getKeyBtn = Instance.new("TextButton")
+getKeyBtn.Name = "GetKeyButton"
+getKeyBtn.Size = UDim2.new(0.5, -25, 0, 42)
+getKeyBtn.Position = UDim2.fromOffset(20, 160)
+getKeyBtn.BackgroundColor3 = Color3.fromRGB(32, 37, 52)
+getKeyBtn.Text = "Get Key"
+getKeyBtn.TextColor3 = Color3.fromRGB(238, 242, 252)
+getKeyBtn.TextSize = 13.5
+getKeyBtn.Font = Enum.Font.GothamBold
+getKeyBtn.Parent = mainFrame
+
+local getKeyCorner = Instance.new("UICorner")
+getKeyCorner.CornerRadius = UDim.new(0, 11)
+getKeyCorner.Parent = getKeyBtn
+
+local getKeyStroke = Instance.new("UIStroke")
+getKeyStroke.Color = Color3.fromRGB(255, 255, 255)
+getKeyStroke.Transparency = 0.88
+getKeyStroke.Thickness = 1
+getKeyStroke.Parent = getKeyBtn
+
+local checkKeyBtn = Instance.new("TextButton")
+checkKeyBtn.Name = "CheckKeyButton"
+checkKeyBtn.Size = UDim2.new(0.5, -25, 0, 42)
+checkKeyBtn.Position = UDim2.new(0.5, 5, 0, 160)
+checkKeyBtn.BackgroundColor3 = Color3.fromRGB(82, 124, 255)
+checkKeyBtn.Text = "Check Key"
+checkKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+checkKeyBtn.TextSize = 13.5
+checkKeyBtn.Font = Enum.Font.GothamBold
+checkKeyBtn.Parent = mainFrame
+
+local checkKeyCorner = Instance.new("UICorner")
+checkKeyCorner.CornerRadius = UDim.new(0, 11)
+checkKeyCorner.Parent = checkKeyBtn
+
+local checkGradient = Instance.new("UIGradient")
+checkGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(96, 138, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(132, 88, 255))
+})
+checkGradient.Parent = checkKeyBtn
+
+local function setStatus(text, textColor, bannerColor)
+	statusLabel.Text = text
+	statusLabel.TextColor3 = textColor
+	TweenService:Create(
+		statusBanner,
+		TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ BackgroundColor3 = bannerColor }
+	):Play()
+end
+
+local isShaking = false
+local function smoothShakeMenu()
+	if isShaking then return end
+	isShaking = true
+
+	local originPos = mainFrame.Position
+	local wave = { 7, -7, 5.5, -5.5, 3.5, -3.5, 1.5, -1.5, 0 }
+
+	TweenService:Create(
+		inputHolderStroke,
+		TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+		{ Color = Color3.fromRGB(255, 88, 102), Transparency = 0.25 }
+	):Play()
+
+	task.spawn(function()
+		for i, offsetX in ipairs(wave) do
+			local duration = 0.042 + (i * 0.002)
+			local tween = TweenService:Create(
+				mainFrame,
+				TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+				{
+					Position = UDim2.new(
+						originPos.X.Scale,
+						originPos.X.Offset + offsetX,
+						originPos.Y.Scale,
+						originPos.Y.Offset
+					)
+				}
+			)
+			tween:Play()
+			tween.Completed:Wait()
+		end
+
+		mainFrame.Position = originPos
+		TweenService:Create(
+			inputHolderStroke,
+			TweenInfo.new(0.28, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+			{ Color = Color3.fromRGB(255, 255, 255), Transparency = 0.9 }
+		):Play()
+		isShaking = false
+	end)
+end
+
+getKeyBtn.MouseButton1Click:Connect(function()
+	if typeof(setclipboard) == "function" then
+		pcall(function()
+			setclipboard(GET_KEY_LINK)
+		end)
+		setStatus("Key link copied to clipboard", Color3.fromRGB(115, 195, 255), Color3.fromRGB(22, 36, 56))
+	else
+		setStatus("Error: Clipboard not supported on executor", Color3.fromRGB(255, 105, 115), Color3.fromRGB(52, 22, 28))
+		smoothShakeMenu()
+	end
+end)
+
+checkKeyBtn.MouseButton1Click:Connect(function()
+	local cleanedKey = inputBox.Text:gsub("^%s*(.-)%s*$", "%1")
+
+	if cleanedKey == "" then
+		inputBox.Text = ""
+		setStatus("Error: Please enter a key before checking", Color3.fromRGB(255, 105, 115), Color3.fromRGB(52, 22, 28))
+		smoothShakeMenu()
+		return
+	end
+
+	if cleanedKey == VALID_KEY then
+		setStatus("Success: Key verified, launching KixDev...", Color3.fromRGB(95, 235, 145), Color3.fromRGB(20, 48, 34))
+		saveKeyCache()
+		task.wait(0.35)
+		screenGui:Destroy()
+		loadScript()
+	else
+		inputBox.Text = ""
+		setStatus("Error: Invalid key! Please try again", Color3.fromRGB(255, 105, 115), Color3.fromRGB(52, 22, 28))
+		smoothShakeMenu()
+	end
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
